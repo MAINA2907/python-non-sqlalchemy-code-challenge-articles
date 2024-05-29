@@ -6,7 +6,14 @@ class Article:
         self.title = title
         Article.all.append(self)
 
-    
+    @property
+    def title(self):
+        return self._title
+        
+    @title.setter
+    def title(self,value):  
+        if isinstance(value,str) and (hasattr(self,'title')==False):
+            self._title = value
     
 
 class Author:
@@ -17,6 +24,11 @@ class Author:
     @property
     def name(self):
         return self._name
+    
+    @name.setter
+    def name(self,value):
+        if isinstance(value,str) and (hasattr(self,'name')==False):
+            self._name = value
 
     def articles(self):
         return [article for article in Article.all if article.author == self]
@@ -49,6 +61,24 @@ class Magazine:
         self.name = name
         self.category = category
 
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self,value):
+        if isinstance(value,str) and 2<=len(value)<=16:
+            self._name = value
+
+    @property
+    def category(self):
+        return self._category
+    
+    @category.setter
+    def category(self,value):
+        if isinstance(value,str) and len(value)>0:
+            self._category = value
+
     def articles(self):
         return [article for article in Article.all if article.magazine == self]
 
@@ -60,9 +90,9 @@ class Magazine:
         return titles or None
 
     def contributing_authors(self):
-        author_article_count = {}
-        for article in self.articles():
-            author_name = article.author.name
-            author_article_count[author_name] = author_article_count.get(author_name, 0) + 1
-        return [author for author in set(article.author for article in self.articles()) 
-                if author_article_count.get(author.name, 0) > 2]
+        contrAuth = {article.author for article in self.articles()}
+        moreThanTwo = [author for author in contrAuth if sum(1 for art in self.articles() if art.author == author) > 2]
+        if (len(moreThanTwo)>0):
+            return moreThanTwo
+        else:
+            return None
